@@ -23,22 +23,13 @@ sequenceDiagram
     Stripe-->>Cart: إرسال توكن نجاح المعاملة (Webhook Token)
     Cart->>DB: حفظ بيانات الطلب وتحديث المخزون
     DB-->>UI: تأكيد إتمام المعاملة بنجاح
-    UI-->>Customer: توجيه العميل إلى صفحة نجاح الطلب
-
-flowchart TD
+    UI-->>Customer: توجيه العميل إلى صفحة نجاح الطلبflowchart TD
     Customer["العميل (Customer)"] -->|طلب المنتجات وبيانات الدفع| System["نظام TechXpress"]
     Admin["المسؤول (Admin)"] -->|إدارة المنتجات والمخزون| System
     Delivery["مسؤول التوصيل (Delivery)"] -->|متابعة حالة الشحن| System
     System -->|تأكيد الطلب والفاتورة| Customer
     System -->|طلب معالجة الدفع| Stripe["بوابة الدفع Stripe"]
-    Stripe -->|تأكيد المعاملة Webhook| System
-
-
-
-
-
-
-flowchart TD
+    Stripe -->|تأكيد المعاملة Webhook| Systemflowchart TD
     subgraph TechXpress_System ["نظام TechXpress"]
         OP1["1. إدارة المستخدمين والهوية"]
         OP2["2. تصفح والبحث في الكتالوج"]
@@ -51,14 +42,7 @@ flowchart TD
     C -->|إضافة وتعديل السلة| OP3
     C -->|إرسال الطلب والدفع| OP4
     OP4 --> DB[(SQL Server DB)]
-    OP4 --> Stripe[Stripe API]
-
-
-
-
-
-
-flowchart TD
+    OP4 --> Stripe[Stripe API]flowchart TD
     Start([البداية]) --> Browse[تصفح المنتجات والبحث]
     Browse --> AddCart[إضافة المنتجات إلى السلة]
     AddCart --> Checkout{هل المستخدم مسجل دخول؟}
@@ -70,35 +54,14 @@ flowchart TD
     Success -->|لا| PayError[عرض رسالة خطأ والعودة للدفع]
     PayError --> Pay
     Success -->|نعم| SaveOrder[حفظ الطلب وتحديث المخزون]
-    SaveOrder --> End([النهاية: عرض صفحة نجاح الطلب])
-
-
-
-
-
-
-
-
-
-
-stateDiagram-v2
+    SaveOrder --> End([النهاية: عرض صفحة نجاح الطلب])stateDiagram-v2
     [*] --> Pending: إنشاء الطلب بانتظار الدفع
     Pending --> PaidProcessing: نجاح الدفع عبر Stripe
     Pending --> Cancelled: فشل الدفع أو إلغاء الطلب
     PaidProcessing --> Shipped: تسليم الطلب لموظف التوصيل
     Shipped --> Delivered: وصول الطلب للعميل بنجاح
     Cancelled --> [*]
-    Delivered --> [*]
-
-
-
-
-
-
-
-
-
-classDiagram
+    Delivered --> [*]classDiagram
     class User {
         +String Id
         +String FullName
