@@ -1,6 +1,3 @@
- Data Flow and Behavior
-1. مخطط التسلسل لعملية الدفع وإتمام الطلب (Checkout & Stripe Payment Sequence Diagram)
-يوضح هذا المخطط تفاعل العميل مع طبقات النظام المختلفة (MVC Views, Services, Stripe API, و SQL Server) عند إتمام عملية الشراء:
 
 sequenceDiagram
     autonumber
@@ -17,10 +14,6 @@ sequenceDiagram
     Cart->>DB: Save Order & Update Stock
     DB-->>UI: Transaction Confirmed
     UI-->>Customer: Redirect to Success Page
-2. مخططات تدفق البيانات (Data Flow Diagrams - DFD)
-أ. Context Diagram (Level 0 DFD)
-يوضح النظام ككل والأطراف الخارجية المتعاملة معه:
-
 flowchart TD
     Customer[Customer] -->|Order & Payment Data| System[TechXpress System]
     Admin[Admin] -->|Manage Inventory & Products| System
@@ -28,9 +21,6 @@ flowchart TD
     System -->|Order Confirmation & Invoice| Customer
     System -->|Process Payment| Stripe[Stripe API]
     Stripe -->|Webhook Response| System
-ب. Level 0 DFD (العمليات الكبرى)
-العمليات الرئيسية داخل النظام:
-
 flowchart TD
     subgraph TechXpress ["TechXpress Core System"]
         OP1[1. User Identity & Auth]
@@ -45,9 +35,6 @@ flowchart TD
     C --> OP4
     OP4 --> DB[(SQL Server DB)]
     OP4 --> Stripe[Stripe API]
-ج. Level 1 DFD (تفاصيل عملية إتمام الطلب والدفع)
-تفكيك العملية رقم 4 (Checkout & Order Processing) إلى خطوات فرعية:
-
 flowchart TD
     subgraph Checkout_Process ["4. Checkout & Order Sub-processes"]
         P41[4.1 Validate Cart & Stock]
@@ -65,9 +52,6 @@ flowchart TD
     P44 -->|Update Stock| ProductDB[(Products Table)]
     P43 -->|Success| P45
     P45 -->|Save Order| OrderDB[(Orders Table)]
-3. مخطط النشاط لعملية الشراء (Activity Diagram)
-يوضح مسار اتخاذ القرار لرحلة المستخدم خطوة بخطوة:
-
 flowchart TD
     Start([Start]) --> Browse[Browse & Search Products]
     Browse --> AddCart[Add Items to Cart]
@@ -81,9 +65,6 @@ flowchart TD
     PayError --> Pay
     Success -->|Yes| SaveOrder[Save Order & Update Stock in DB]
     SaveOrder --> End([End: Order Success View])
-4. مخطط الحالة لدورة حياة الطلب (State Diagram)
-يوضح حالات الطلب المختلفة داخل النظام:
-
 stateDiagram-v2
     [*] --> Pending: Order Created (Awaiting Payment)
     Pending --> PaidProcessing: Payment Success (Stripe Webhook)
@@ -92,9 +73,6 @@ stateDiagram-v2
     Shipped --> Delivered: Delivered to Customer
     Cancelled --> [*]
     Delivered --> [*]
-5. مخطط الفئات ونماذج البيانات (Class Diagram)
-يوضح بنية النطاق البرمجي المتوافقة مع Entity Framework Core:
-
 classDiagram
     class User {
         +String Id
