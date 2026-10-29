@@ -45,7 +45,7 @@ flowchart TD
     OP4 --> Stripe[Stripe API]
 ```
 4. Order Processing Flowchart
-mermaid
+```mermaid
 flowchart TD
     Start([Start]) --> Browse[Browse Products]
     Browse --> AddCart[Add to Cart]
@@ -97,8 +97,12 @@ classDiagram
         +DateTime OrderDate
         +decimal TotalAmount
         +String OrderStatus
-```
     }
 
     Category "1" --> "*" Product : contains
     User "1" --> "*" Order : places
+
+```
+
+
+
