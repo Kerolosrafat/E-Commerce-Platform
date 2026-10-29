@@ -1,14 +1,7 @@
-# المرحلة الثالثة: تدفق البيانات والسلوك (Data Flow and Behavior) - منصة TechXpress
+ Data Flow and Behavior
+1. مخطط التسلسل لعملية الدفع وإتمام الطلب (Checkout & Stripe Payment Sequence Diagram)
+يوضح هذا المخطط تفاعل العميل مع طبقات النظام المختلفة (MVC Views, Services, Stripe API, و SQL Server) عند إتمام عملية الشراء:
 
-يوضح هذا المستند التصميم الهيكلي وتدفق العمليات البرمجية والسلوكية لنظام التجارة الإلكترونية **TechXpress** بناءً على معمارية N-Tier و ASP.NET Core MVC.
-
----
-
-## 1. مخطط التسلسل لعملية الدفع وإتمام الطلب (Checkout & Stripe Payment Sequence Diagram)
-
-يوضح هذا المخطط تفاعل العميل مع طبقات النظام المختلفة عند إتمام عملية الشراء:
-
-```mermaid
 sequenceDiagram
     autonumber
     actor Customer as Customer
@@ -17,51 +10,92 @@ sequenceDiagram
     participant Stripe as Stripe API
     participant DB as SQL Server
 
-    Customer->>UI: الضغط على زر إتمام الطلب والدفع
-    UI->>Cart: التحقق من توفر عناصر سلة التسوق
-    Cart->>Stripe: إنشاء طلب دفع آمن (Payment Intent)
-    Stripe-->>Cart: إرسال توكن نجاح المعاملة (Webhook Token)
-    Cart->>DB: حفظ بيانات الطلب وتحديث المخزون
-    DB-->>UI: تأكيد إتمام المعاملة بنجاح
-    UI-->>Customer: توجيه العميل إلى صفحة نجاح الطلبflowchart TD
-    Customer["العميل (Customer)"] -->|طلب المنتجات وبيانات الدفع| System["نظام TechXpress"]
-    Admin["المسؤول (Admin)"] -->|إدارة المنتجات والمخزون| System
-    Delivery["مسؤول التوصيل (Delivery)"] -->|متابعة حالة الشحن| System
-    System -->|تأكيد الطلب والفاتورة| Customer
-    System -->|طلب معالجة الدفع| Stripe["بوابة الدفع Stripe"]
-    Stripe -->|تأكيد المعاملة Webhook| Systemflowchart TD
-    subgraph TechXpress_System ["نظام TechXpress"]
-        OP1["1. إدارة المستخدمين والهوية"]
-        OP2["2. تصفح والبحث في الكتالوج"]
-        OP3["3. إدارة سلة التسوق"]
-        OP4["4. إتمام الطلب والدفع"]
+    Customer->>UI: Click Checkout & Pay
+    UI->>Cart: Validate Cart Items
+    Cart->>Stripe: Create Payment Intent
+    Stripe-->>Cart: Webhook Token Success
+    Cart->>DB: Save Order & Update Stock
+    DB-->>UI: Transaction Confirmed
+    UI-->>Customer: Redirect to Success Page
+2. مخططات تدفق البيانات (Data Flow Diagrams - DFD)
+أ. Context Diagram (Level 0 DFD)
+يوضح النظام ككل والأطراف الخارجية المتعاملة معه:
+
+flowchart TD
+    Customer[Customer] -->|Order & Payment Data| System[TechXpress System]
+    Admin[Admin] -->|Manage Inventory & Products| System
+    Delivery[Delivery Agent] -->|Track Shipping Status| System
+    System -->|Order Confirmation & Invoice| Customer
+    System -->|Process Payment| Stripe[Stripe API]
+    Stripe -->|Webhook Response| System
+ب. Level 0 DFD (العمليات الكبرى)
+العمليات الرئيسية داخل النظام:
+
+flowchart TD
+    subgraph TechXpress ["TechXpress Core System"]
+        OP1[1. User Identity & Auth]
+        OP2[2. Catalog Search & Filter]
+        OP3[3. Shopping Cart Management]
+        OP4[4. Checkout & Order Processing]
     end
 
-    C["العميل"] -->|تسجيل وصلاحيات| OP1
-    C -->|بحث وتصفية| OP2
-    C -->|إضافة وتعديل السلة| OP3
-    C -->|إرسال الطلب والدفع| OP4
+    C[Customer] --> OP1
+    C --> OP2
+    C --> OP3
+    C --> OP4
     OP4 --> DB[(SQL Server DB)]
-    OP4 --> Stripe[Stripe API]flowchart TD
-    Start([البداية]) --> Browse[تصفح المنتجات والبحث]
-    Browse --> AddCart[إضافة المنتجات إلى السلة]
-    AddCart --> Checkout{هل المستخدم مسجل دخول؟}
-    Checkout -->|لا| Login[تسجيل الدخول عبر ASP.NET Identity]
-    Login --> Shipping[إدخال عناوين وشحن الطلب]
-    Checkout -->|نعم| Shipping
-    Shipping --> Pay[الانتقال لصفحة الدفع الآمن Stripe]
-    Pay --> Success{هل نجح الدفع؟}
-    Success -->|لا| PayError[عرض رسالة خطأ والعودة للدفع]
+    OP4 --> Stripe[Stripe API]
+ج. Level 1 DFD (تفاصيل عملية إتمام الطلب والدفع)
+تفكيك العملية رقم 4 (Checkout & Order Processing) إلى خطوات فرعية:
+
+flowchart TD
+    subgraph Checkout_Process ["4. Checkout & Order Sub-processes"]
+        P41[4.1 Validate Cart & Stock]
+        P42[4.2 Calculate Total & Taxes]
+        P43[4.3 Process Stripe Payment]
+        P44[4.4 Deduct Inventory]
+        P45[4.5 Create Order Record]
+    end
+
+    User[Customer] -->|Submit Cart| P41
+    P41 -->|Cart Items| P42
+    P42 -->|Amount| P43
+    P43 <-->|API Token| PaymentGateway[Stripe API]
+    P43 -->|Success| P44
+    P44 -->|Update Stock| ProductDB[(Products Table)]
+    P43 -->|Success| P45
+    P45 -->|Save Order| OrderDB[(Orders Table)]
+3. مخطط النشاط لعملية الشراء (Activity Diagram)
+يوضح مسار اتخاذ القرار لرحلة المستخدم خطوة بخطوة:
+
+flowchart TD
+    Start([Start]) --> Browse[Browse & Search Products]
+    Browse --> AddCart[Add Items to Cart]
+    AddCart --> Checkout{Is User Logged In?}
+    Checkout -->|No| Login[Login via ASP.NET Identity]
+    Login --> Shipping[Enter Shipping Details]
+    Checkout -->|Yes| Shipping
+    Shipping --> Pay[Redirect to Stripe Secure Payment]
+    Pay --> Success{Payment Successful?}
+    Success -->|No| PayError[Show Error & Return to Pay]
     PayError --> Pay
-    Success -->|نعم| SaveOrder[حفظ الطلب وتحديث المخزون]
-    SaveOrder --> End([النهاية: عرض صفحة نجاح الطلب])stateDiagram-v2
-    [*] --> Pending: إنشاء الطلب بانتظار الدفع
-    Pending --> PaidProcessing: نجاح الدفع عبر Stripe
-    Pending --> Cancelled: فشل الدفع أو إلغاء الطلب
-    PaidProcessing --> Shipped: تسليم الطلب لموظف التوصيل
-    Shipped --> Delivered: وصول الطلب للعميل بنجاح
+    Success -->|Yes| SaveOrder[Save Order & Update Stock in DB]
+    SaveOrder --> End([End: Order Success View])
+4. مخطط الحالة لدورة حياة الطلب (State Diagram)
+يوضح حالات الطلب المختلفة داخل النظام:
+
+stateDiagram-v2
+    [*] --> Pending: Order Created (Awaiting Payment)
+    Pending --> PaidProcessing: Payment Success (Stripe Webhook)
+    Pending --> Cancelled: Payment Failed or Cancelled
+    PaidProcessing --> Shipped: Dispatched to Delivery Agent
+    Shipped --> Delivered: Delivered to Customer
     Cancelled --> [*]
-    Delivered --> [*]classDiagram
+    Delivered --> [*]
+5. مخطط الفئات ونماذج البيانات (Class Diagram)
+يوضح بنية النطاق البرمجي المتوافقة مع Entity Framework Core:
+
+classDiagram
     class User {
         +String Id
         +String FullName
@@ -101,9 +135,9 @@ sequenceDiagram
         +decimal UnitPrice
     }
 
-    Category "1" --> "*" Product : يحتوي على
-    User "1" --> "*" CartItem : يمتلك
-    Product "1" --> "*" CartItem : يضاف إلى
-    User "1" --> "*" Order : ينشئ
-    Order "1" --> "*" OrderItem : يتضمن
-    Product "1" --> "*" OrderItem : يطلب في
+    Category "1" --> "*" Product : contains
+    User "1" --> "*" CartItem : owns
+    Product "1" --> "*" CartItem : added_to
+    User "1" --> "*" Order : places
+    Order "1" --> "*" OrderItem : includes
+    Product "1" --> "*" OrderItem : ordered_in
