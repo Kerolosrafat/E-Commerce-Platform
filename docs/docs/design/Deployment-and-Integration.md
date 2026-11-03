@@ -60,9 +60,11 @@ graph TD
 3. التقنيات النهائية المستخدمة (Tech Stack)
 <img width="948" height="688" alt="image" src="https://github.com/user-attachments/assets/beb9da35-4830-4ec1-8d41-307dee24fc7e" />
 
+
 4. توثيق المسارات البرمجية وواجهات التحكم (Controller Endpoints)
-6.
+
 <img width="1031" height="734" alt="image" src="https://github.com/user-attachments/assets/f54ba5a5-0ba2-4a5b-922b-51b1f12d65eb" />
+
 
 5. خطة الاختبار (Testing Plan)
 
