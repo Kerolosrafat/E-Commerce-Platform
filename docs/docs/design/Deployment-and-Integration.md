@@ -65,6 +65,8 @@ graph TD
 <img width="1031" height="734" alt="image" src="https://github.com/user-attachments/assets/f54ba5a5-0ba2-4a5b-922b-51b1f12d65eb" />
 
 5. خطة الاختبار (Testing Plan)
+
+
 اختبارات الوحدة (Unit Testing): اختبار دوال الحسابات الرياضية في سلة التسوق (إجماليات الأسعار، الضرائب، وخصومات الكمية).
 
 اختبارات الوحدة (Unit Testing): التحقق من سلامة عمل الـ Repositories واستعلامات الـ LINQ.
