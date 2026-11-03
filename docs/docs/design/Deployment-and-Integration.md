@@ -1,4 +1,4 @@
-مخطط النشر (Deployment Diagram)
+1.مخطط النشر (Deployment Diagram)
 ```mermaid
 graph TD
     subgraph Client Environment
@@ -21,7 +21,7 @@ graph TD
     WebServer -->|Entity Framework Core / LINQ| SQLServer
     WebServer -->|HTTPS / API Calls & Webhooks| Stripe
 ```
-مخطط المكونات (Component Diagram)
+2.مخطط المكونات (Component Diagram)
 ```mermaid
 graph TD
     subgraph Presentation Layer
@@ -57,49 +57,29 @@ graph TD
 
 
 ```
-4. التقنيات النهائية المستخدمة (Tech Stack)
-5. <img width="950" height="689" alt="image" src="https://github.com/user-attachments/assets/7ee512b2-c91e-46ae-a5ca-71e7746d9147" />
-5. توثيق المسارات البرمجية وواجهات التحكم (Controller Endpoints)
+3. التقنيات النهائية المستخدمة (Tech Stack)
+<img width="948" height="688" alt="image" src="https://github.com/user-attachments/assets/beb9da35-4830-4ec1-8d41-307dee24fc7e" />
+
+4. توثيق المسارات البرمجية وواجهات التحكم (Controller Endpoints)
 6.
 <img width="1031" height="734" alt="image" src="https://github.com/user-attachments/assets/f54ba5a5-0ba2-4a5b-922b-51b1f12d65eb" />
 
-6. خطة الاختبار (Testing Plan)
-لضمان جودة النظام وخلوه من الأخطاء قبل التسليم النهائي، تم وضع خطة اختبار شاملة تتضمن:
+5. خطة الاختبار (Testing Plan)
+اختبارات الوحدة (Unit Testing): اختبار دوال الحسابات الرياضية في سلة التسوق (إجماليات الأسعار، الضرائب، وخصومات الكمية).
 
-Unit Testing (الاختبارات الوحدة):
+اختبارات الوحدة (Unit Testing): التحقق من سلامة عمل الـ Repositories واستعلامات الـ LINQ.
 
-اختبار دوال الحسابات الرياضية في سلة التسوق (إجماليات الأسعار، الضرائب، وخصومات الكمية).
+اختبار التكامل (Integration Testing): اختبار ربط الـ Entity Framework بقاعدة بيانات SQL Server والتأكد من نجاح الـ Migrations واستقرار العلاقات بين الجداول.
 
-التحقق من سلامة عمل الـ Repositories واستعلامات الـ LINQ.
+اختبار التكامل (Integration Testing): اختبار الربط الآمن مع Stripe Test API والتأكد من تطابق الـ Webhooks.
 
-Integration Testing (اختبار التكامل):
+محاكاة الدفع والويب هوك (Payment & Webhook Simulation): محاكاة عمليات الدفع الناجحة والفاشلة باستخدام بطاقات اختبار Stripe، والتحقق من التحديث الفوري لحالة الطلب في قاعدة البيانات.
 
-اختبار ربط الـ Entity Framework بقاعدة بيانات SQL Server والتأكد من نجاح الـ Migrations واستقرار العلاقات بين الجداول.
+اختبار قبول المستخدم (UAT): اختبار صلاحيات الوصول المختلفة (RBAC) والتأكد من أن العميل، الأدمن، وعامل التوصيل يمتلكون الصلاحيات المخصصة لهم فقط دون تداخل.
 
-اختبار الربط الآمن مع Stripe Test API والتأكد من تطابق الـ Webhooks.
+استراتيجية النشر (إعدادات بيئة العمل): تخزين بيانات الاتصال الحساسة بقاعدة البيانات (ConnectionStrings) ومفاتيح السر الخاصة ببوابة الدفع (StripeSettings:SecretKey) بشكل آمن داخل ملفات الإعدادات السحابية (appsettings.json أو لوحة تحكم سحابة Azure).
 
-Payment & Webhook Simulation:
+استراتيجية النشر (ترحيل قاعدة البيانات): تشغيل أوامر النشر المحدثة لتطبيق الجداول على سيرفر الإنتاج (dotnet ef database update --configuration Release).
 
-محاكاة عمليات الدفع الناجحة والفاشلة باستخدام بطاقات اختبار Stripe، والتحقق من التحديث الفوري لحالة الطلب في قاعدة البيانات.
-
-User Acceptance Testing (UAT):
-
-اختبار صلاحيات الوصول المختلفة (RBAC) والتأكد من أن العميل، الأدمن، وعامل التوصيل يمتلكون الصلاحيات المخصصة لهم فقط دون تداخل.
-
-7. استراتيجية النشر (Deployment Strategy)
-إعدادات بيئة العمل (Environment Variables):
-
-تخزين بيانات الاتصال الحساسة بقاعدة البيانات (ConnectionStrings) ومفاتيح السر الخاصة ببوابة الدفع (StripeSettings:SecretKey) بشكل آمن داخل ملفات الإعدادات السحابية (appsettings.json أو لوحة تحكم سحابة Azure).
-
-ترحيل قاعدة البيانات (Database Migration Strategy):
-
-تشغيل أوامر النشر المحدثة لتطبيق الجداول على سيرفر الإنتاج:
-
-
-dotnet ef database update --configuration Release
-إدارة النشر السحابي (Cloud Hosting):
-
-نشر التطبيق على بيئة Azure App Service أو خادم Somee IIS، مع تفعيل شهادات الحماية HTTPS / TLS 1.3 لتأمين بيانات العملاء والبطاقات الائتمانية أثناء الدفع.
-
-
-
+استراتيجية النشر (النشر السحابي): نشر التطبيق على بيئة Azure App Service أو خادم Somee IIS، مع تفعيل شهادات الحماية HTTPS / TLS 1.3 لتأمين بيانات العملاء والبطاقات الائتمانية أثناء الدفع.
+إدارة النشر السحابي (Cloud Hosting): نشر التطبيق على بيئة Azure App Service أو خادم Somee IIS، مع تفعيل شهادات الحماية HTTPS / TLS 1.3 لتأمين بيانات العملاء والبطاقات الائتمانية أثناء الدفع.
